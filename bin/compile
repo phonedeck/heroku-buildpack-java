@@ -38,13 +38,19 @@ if [ ! -d .maven ]; then
 fi
 
 MAVEN_SETTINGS_URL="http://s3.amazonaws.com/heroku-jvm-langpack-java/settings.xml"
-
-echo -n "-----> Installing settings.xml..."
 if [ -f .m2/settings.xml ]; then
   rm .m2/settings.xml 
 fi
-curl --silent --max-time 10 --location $MAVEN_SETTINGS_URL --output .m2/settings.xml
-echo " done"
+
+if [ -f $BUILD_DIR/settings.xml ]; then
+  echo -n "-----> Installing local settings.xml..."
+  cp $BUILD_DIR/settings.xml .m2/settings.xml
+  echo " done"
+else
+  echo -n "-----> Installing settings.xml..."
+  curl --silent --max-time 10 --location $MAVEN_SETTINGS_URL --output .m2/settings.xml
+  echo " done"
+fi
 
 # change to build dir to run maven
 cd $BUILD_DIR
